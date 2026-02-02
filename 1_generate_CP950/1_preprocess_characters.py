@@ -4,6 +4,9 @@ import math
 with open("manuscript_paper.txt", "r", encoding="utf-8") as file:
     text = file.read()
 
+# 輸入稿紙標題
+title = input("請輸入稿紙標題 (ex. 千字文)")
+
 # 依據空白字元分割
 raw_clean_text = "".join(text.lstrip('\ufeff').split())
 
@@ -30,11 +33,15 @@ os.makedirs(os.path.dirname(paper_info_path), exist_ok=True)
 with open(paper_info_path, 'r', encoding='utf-8') as f:
     info = json.load(f)
 
+info["TITLE"] = title
 info["TOTAL_CHARACTERS"] = count
 info["TOTAL_PAGES"] = pages
+
 with open(paper_info_path, 'w', encoding="utf-8") as f:
     json.dump(info, f, indent=4, ensure_ascii=False)
 
+print("----------已處理完畢----------")
+print("稿紙名稱:", title)
 print("字元的數量:", count)
 print(f"已保存到 {output_file}")
 print("info.json 更新完畢")
