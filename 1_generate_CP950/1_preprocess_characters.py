@@ -5,13 +5,19 @@ with open("manuscript_paper.txt", "r", encoding="utf-8") as file:
     text = file.read()
 
 # 依據空白字元分割
-clean_text = "".join(text.lstrip('\ufeff').split())
+raw_clean_text = "".join(text.lstrip('\ufeff').split())
+
+exclude_chars = "，。；「」：！？"
+clean_text = "".join([char for char in raw_clean_text if char not in exclude_chars])
+
+print(clean_text)
 
 # 建立一個txt檔案並將字元寫入其中
 output_file = "chinese_character.txt"
 with open(output_file, "w", encoding="utf-8") as file:
     for char in clean_text:
         file.write(char)
+
 
 # 計算稿紙字元的數量
 count = len(clean_text)
@@ -24,9 +30,8 @@ os.makedirs(os.path.dirname(paper_info_path), exist_ok=True)
 with open(paper_info_path, 'r', encoding='utf-8') as f:
     info = json.load(f)
 
-info["TOTAL_CHARATERS"] = count
+info["TOTAL_CHARACTERS"] = count
 info["TOTAL_PAGES"] = pages
-
 with open(paper_info_path, 'w', encoding="utf-8") as f:
     json.dump(info, f, indent=4, ensure_ascii=False)
 
