@@ -22,17 +22,19 @@ cd C:\Users\ntut\01-1_generate_paper-main\0_env_gen_paper
 pip install -r requirements.txt
 ```
 ### 7. 檢查套件
-是否符合 `requirements.txt` 內的套件與版本
 ```
 conda list
 ```
+- 是否符合 `requirements.txt` 內的套件與版本
+
 -----
 
 ## 設定稿紙
 
 ### 選擇稿紙內容
-- 將該次[作業](https://tjhsieh.github.io/c/ai/ai2026s/hw/index.html)的指定稿紙內容直接貼至 `manuscript_paper.txt`
-- 有**空行**、**空格**沒關係
+- 將該次[作業](https://tjhsieh.github.io/c/ai/ai2026s/hw/index.html)的指定稿紙內容貼至 `manuscript_paper.txt`
+- 貼上時，請略過所有來源連結
+- 有 **空行**、**空格**、**標點符號** 沒關係
 
 ### 切換目錄至 `1_generate_CP950`
 ```
