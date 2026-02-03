@@ -13,9 +13,24 @@ import matplotlib.font_manager as fm
 
 '''plt.rcParams["font.sans-serif"] = ["PMingLiU","Mingliu"]  # font family: '細明體MingLiU'
 plt.rcParams["axes.unicode_minus"] = False'''
-font_path = r"D:\NTUT\AI\Font-Project\01-1_generate_paper-main\2_generate_manuscript\NotoSansTC-ExtraLight.ttf"  # 請根據你的系統修改字型路徑
-fm.fontManager.addfont(font_path)
-plt.rcParams["font.sans-serif"] = fm.FontProperties(fname=font_path).get_name()
+font_NotoSansTC_path = r"D:\NTUT\AI\Font-Project\01-1_generate_paper-main\2_generate_manuscript\NotoSansTC-ExtraLight.ttf"  # 請根據你的系統修改字型路徑
+fm.fontManager.addfont(font_NotoSansTC_path)
+font_NotoSansTC= fm.FontProperties(fname=font_NotoSansTC_path).get_name()
+
+font_BiauKai_path = r"C:\WINDOWS\FONTS\KAIU.TTF"  # 請根據你的系統修改字型路徑
+fm.fontManager.addfont(font_BiauKai_path)
+font_BiauKai= fm.FontProperties(fname=font_BiauKai_path).get_name()
+
+font_Arial_path = r"D:\NTUT\AI\Font-Project\01-1_generate_paper-main\2_generate_manuscript\arial unicode ms.otf"  # 請根據你的系統修改字型路徑
+fm.fontManager.addfont(font_Arial_path)
+font_Arial= fm.FontProperties(fname=font_Arial_path).get_name()
+
+font_FreeSerif_path = r"D:\NTUT\AI\Font-Project\01-1_generate_paper-main\2_generate_manuscript\FreeSerif.ttf"  # 請根據你的系統修改字型路徑
+fm.fontManager.addfont(font_FreeSerif_path)
+font_FreeSerif= fm.FontProperties(fname=font_FreeSerif_path).get_name()
+
+plt.rcParams["font.sans-serif"] = [font_FreeSerif]
+plt.rcParams["axes.unicode_minus"] = False
 
 # 讀取 info.json 稿紙字元數 及 頁數
 with open('info.json','r', encoding='utf-8') as f:
@@ -277,7 +292,7 @@ def pipeline(args):
 
 
 fnip = [[""] * 100 for _ in range(total_pages)]  # Font Number in Page (Unicode)
-unicode = read_json("./CP950.json")
+unicode = read_json(f"./CP950/CP950-{title}.json")
 
 if __name__ == "__main__":
     cpus = mp.cpu_count()  # count of CPU cores
