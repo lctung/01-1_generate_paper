@@ -21,8 +21,6 @@ title = info["TITLE"]
 
 font_configs = [
     {"name": "NotoSansTC", "path": r"D:\NTUT\AI\Font-Project\01-1_generate_paper-main\2_generate_manuscript\font_type\NotoSansTC-ExtraLight.ttf"},
-    {"name": "TW-Kai", "path": r"D:\NTUT\AI\Font-Project\01-1_generate_paper-main\2_generate_manuscript\font_type\TW-Kai-98_1.ttf"}, # 確保副檔名正確
-    {"name": "Arial", "path": r"D:\NTUT\AI\Font-Project\01-1_generate_paper-main\2_generate_manuscript\font_type\arial unicode ms.otf"},
     {"name": "FreeSerif", "path": r"D:\NTUT\AI\Font-Project\01-1_generate_paper-main\2_generate_manuscript\font_type\FreeSerif.ttf"}
 ]
 
@@ -161,42 +159,6 @@ def read_json(file):
                 v[i] = ""  # You can decide what to do in case of an error.
         return v
 
-# def print_font(count, page, fnip):
-#     index = 0
-#     X = np.arange(7.5, 192.5, 20)
-#     Y = np.arange(21, 281, 26)
-    
-#     for j in range(10):
-#         for i in range(10):
-#             if count >= total_characters:
-#                 plt.text(X[i], Y[j] - 2, "", fontsize=15, color="black", alpha=0.7)
-#                 # plt.text(12.5+16.25*j, 23+17*i, '', fontsize=32, color='black')
-#             else:
-#                 if unicode[count] == "123" or count >= total_characters:
-#                     plt.text(X[i], Y[j] - 2, "", fontsize=15, color="black", alpha=0.7)
-#                     fnip[page][index] = ""  # 第(page+1)頁 第(index+1)個字
-#                     # plt.text(7+16.25*j, 26.7+17*i, '\\u25A0'.encode('ascii').decode('unicode-escape'), fontsize=64, color='black')
-#                 else:
-#                     plt.text(
-#                         X[i] + 1,
-#                         Y[j] - 3,
-#                         unicode[count].encode("ascii").decode("unicode-escape"),
-#                         fontsize=14,
-#                         color="black",
-#                         alpha=0.7,
-#                     )
-#                     plt.text(
-#                         X[i] + 8.5,
-#                         Y[j] - 3,
-#                         unicode[count][2:6],
-#                         fontsize=8,
-#                         color="black",
-#                         alpha=0.7,
-#                     )
-#                     fnip[page][index] = unicode[count][2:6]
-#                 index += 1
-#             count += 1
-
 def print_font(count, page, fnip):
     index = 0
     X = np.arange(7.5, 192.5, 20)
@@ -236,7 +198,7 @@ def print_font(count, page, fnip):
                     fontsize=8,
                     color="black",
                     alpha=0.7,
-                    fontproperties=font_objects[2]["prop"] # 固定用 Arial 顯示編碼
+                    fontproperties=noto_prop
                 )
                 fnip[page][index] = char_code[2:6]
             
