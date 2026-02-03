@@ -10,27 +10,7 @@ import matplotlib.patches as patches
 from PIL import Image
 import os
 import matplotlib.font_manager as fm
-
-'''plt.rcParams["font.sans-serif"] = ["PMingLiU","Mingliu"]  # font family: '細明體MingLiU'
-plt.rcParams["axes.unicode_minus"] = False'''
-font_NotoSansTC_path = r"D:\NTUT\AI\Font-Project\01-1_generate_paper-main\2_generate_manuscript\NotoSansTC-ExtraLight.ttf"  # 請根據你的系統修改字型路徑
-fm.fontManager.addfont(font_NotoSansTC_path)
-font_NotoSansTC= fm.FontProperties(fname=font_NotoSansTC_path).get_name()
-
-font_BiauKai_path = r"C:\WINDOWS\FONTS\KAIU.TTF"  # 請根據你的系統修改字型路徑
-fm.fontManager.addfont(font_BiauKai_path)
-font_BiauKai= fm.FontProperties(fname=font_BiauKai_path).get_name()
-
-font_Arial_path = r"D:\NTUT\AI\Font-Project\01-1_generate_paper-main\2_generate_manuscript\arial unicode ms.otf"  # 請根據你的系統修改字型路徑
-fm.fontManager.addfont(font_Arial_path)
-font_Arial= fm.FontProperties(fname=font_Arial_path).get_name()
-
-font_FreeSerif_path = r"D:\NTUT\AI\Font-Project\01-1_generate_paper-main\2_generate_manuscript\FreeSerif.ttf"  # 請根據你的系統修改字型路徑
-fm.fontManager.addfont(font_FreeSerif_path)
-font_FreeSerif= fm.FontProperties(fname=font_FreeSerif_path).get_name()
-
-plt.rcParams["font.sans-serif"] = [font_FreeSerif]
-plt.rcParams["axes.unicode_minus"] = False
+from fontTools.ttLib import TTFont
 
 # 讀取 info.json 稿紙字元數 及 頁數
 with open('info.json','r', encoding='utf-8') as f:
@@ -38,6 +18,38 @@ with open('info.json','r', encoding='utf-8') as f:
 total_characters = info["TOTAL_CHARACTERS"]
 total_pages = info["TOTAL_PAGES"]
 title = info["TITLE"]
+
+font_configs = [
+    {"name": "NotoSansTC", "path": r"D:\NTUT\AI\Font-Project\01-1_generate_paper-main\2_generate_manuscript\font_type\NotoSansTC-ExtraLight.ttf"},
+    {"name": "TW-Kai", "path": r"D:\NTUT\AI\Font-Project\01-1_generate_paper-main\2_generate_manuscript\font_type\TW-Kai-98_1.ttf"}, # 確保副檔名正確
+    {"name": "Arial", "path": r"D:\NTUT\AI\Font-Project\01-1_generate_paper-main\2_generate_manuscript\font_type\arial unicode ms.otf"},
+    {"name": "FreeSerif", "path": r"D:\NTUT\AI\Font-Project\01-1_generate_paper-main\2_generate_manuscript\font_type\FreeSerif.ttf"}
+]
+
+font_objects = []
+for config in font_configs:
+    if os.path.exists(config["path"]):
+        fm.fontManager.addfont(config["path"])
+        prop = fm.FontProperties(fname=config["path"])
+        # 使用 fontTools 讀取字元表
+        ttfont = TTFont(config["path"])
+        cmap = ttfont.getBestCmap()
+        font_objects.append({
+            "prop": prop,
+            "cmap": cmap,
+            "name": config["name"]
+        })
+
+noto_prop = next((obj["prop"] for obj in font_objects if obj["name"] == "NotoSansTC"), None)
+
+def get_best_font_prop(char):
+    """回傳第一個支援該字元的字體屬性"""
+    target_unicode = ord(char)
+    for obj in font_objects:
+        if target_unicode in obj["cmap"]:
+            return obj["prop"]
+    return None
+
 
 def decimal_to_binary(number, digits):
     index = digits - 1
@@ -56,11 +68,11 @@ def create_plot(page):
     )  # figure size (inches)
     axes = plt.subplot(111)
 
-    plt.text(125, 7, "生成式人工智慧導論", fontsize=12.5, color="black")
+    plt.text(125, 7, "生成式人工智慧導論", fontsize=12.5, color="black", fontproperties=noto_prop)
     student = info["ID"] + "_" + info["NAME"]
-    plt.text(85, 7, student, fontsize=12.5, color="black")
+    plt.text(85, 7, student, fontsize=12.5, color="black", fontproperties=noto_prop)
     number = info["NUMBER"]
-    plt.text(55, 7,"114年度第二學期")
+    plt.text(55, 7,"114年度第二學期", fontproperties=noto_prop)
 
     table_square(axes)
 
@@ -73,6 +85,7 @@ def create_plot(page):
         "第 {}/{} 頁".format(temp_page, total_pages),
         fontsize=12.5,
         color="black",
+        fontproperties=noto_prop
     )
     plt.text(
         10,
@@ -80,13 +93,14 @@ def create_plot(page):
         "字順 {}-{}".format(100 * (temp_page - 1) + 1, 100 * temp_page),
         fontsize=17,
         color="black",
+        fontproperties=noto_prop
     )
-    plt.text(88, 285, "頁碼", fontsize=11, color="black")
+    plt.text(88, 285, "頁碼", fontsize=11, color="black", fontproperties=noto_prop)
     rect = patches.Rectangle(
         (98, 279), 58, 9, linewidth=1, edgecolor="black", facecolor="black", fill=False
     )
     axes.add_patch(rect)
-    plt.text(158, 285, str(temp_page), fontsize=11, color="black")
+    plt.text(158, 285, str(temp_page), fontsize=11, color="black", fontproperties=noto_prop)
 
     # decimal to binary
     binaries = decimal_to_binary(temp_page, 8)
@@ -104,12 +118,12 @@ def create_plot(page):
         )
         axes.add_patch(rect)
 
-    plt.text(8, 285, "編號", fontsize=11, color="black")
+    plt.text(8, 285, "編號", fontsize=11, color="black", fontproperties=noto_prop)
     rect = patches.Rectangle(
         (18, 279), 58, 9, linewidth=1, edgecolor="black", facecolor="black", fill=False
     )
     axes.add_patch(rect)
-    plt.text(78, 285, str(number), fontsize=11, color="black")
+    plt.text(78, 285, str(number), fontsize=11, color="black", fontproperties=noto_prop)
 
     # decimal to binary
     binaries = decimal_to_binary(number, 8)
@@ -147,41 +161,88 @@ def read_json(file):
                 v[i] = ""  # You can decide what to do in case of an error.
         return v
 
+# def print_font(count, page, fnip):
+#     index = 0
+#     X = np.arange(7.5, 192.5, 20)
+#     Y = np.arange(21, 281, 26)
+    
+#     for j in range(10):
+#         for i in range(10):
+#             if count >= total_characters:
+#                 plt.text(X[i], Y[j] - 2, "", fontsize=15, color="black", alpha=0.7)
+#                 # plt.text(12.5+16.25*j, 23+17*i, '', fontsize=32, color='black')
+#             else:
+#                 if unicode[count] == "123" or count >= total_characters:
+#                     plt.text(X[i], Y[j] - 2, "", fontsize=15, color="black", alpha=0.7)
+#                     fnip[page][index] = ""  # 第(page+1)頁 第(index+1)個字
+#                     # plt.text(7+16.25*j, 26.7+17*i, '\\u25A0'.encode('ascii').decode('unicode-escape'), fontsize=64, color='black')
+#                 else:
+#                     plt.text(
+#                         X[i] + 1,
+#                         Y[j] - 3,
+#                         unicode[count].encode("ascii").decode("unicode-escape"),
+#                         fontsize=14,
+#                         color="black",
+#                         alpha=0.7,
+#                     )
+#                     plt.text(
+#                         X[i] + 8.5,
+#                         Y[j] - 3,
+#                         unicode[count][2:6],
+#                         fontsize=8,
+#                         color="black",
+#                         alpha=0.7,
+#                     )
+#                     fnip[page][index] = unicode[count][2:6]
+#                 index += 1
+#             count += 1
+
 def print_font(count, page, fnip):
     index = 0
     X = np.arange(7.5, 192.5, 20)
     Y = np.arange(21, 281, 26)
+    
     for j in range(10):
         for i in range(10):
             if count >= total_characters:
-                plt.text(X[i], Y[j] - 2, "", fontsize=15, color="black", alpha=0.7)
-                # plt.text(12.5+16.25*j, 23+17*i, '', fontsize=32, color='black')
+                continue
+            
+            char_code = unicode[count]
+            if char_code == "123" or not char_code:
+                fnip[page][index] = ""
             else:
-                if unicode[count] == "123" or count >= total_characters:
-                    plt.text(X[i], Y[j] - 2, "", fontsize=15, color="black", alpha=0.7)
-                    fnip[page][index] = ""  # 第(page+1)頁 第(index+1)個字
-                    # plt.text(7+16.25*j, 26.7+17*i, '\\u25A0'.encode('ascii').decode('unicode-escape'), fontsize=64, color='black')
-                else:
-                    plt.text(
-                        X[i] + 1,
-                        Y[j] - 3,
-                        unicode[count].encode("ascii").decode("unicode-escape"),
-                        fontsize=14,
-                        color="black",
-                        alpha=0.7,
-                    )
-                    plt.text(
-                        X[i] + 8.5,
-                        Y[j] - 3,
-                        unicode[count][2:6],
-                        fontsize=8,
-                        color="black",
-                        alpha=0.7,
-                    )
-                    fnip[page][index] = unicode[count][2:6]
-                index += 1
+                # 解碼 Unicode 字串 (例如 \u0370 -> 實際字元)
+                actual_char = char_code.encode("ascii").decode("unicode-escape")
+                
+                # 取得該字元最適合的字體
+                best_prop = get_best_font_prop(actual_char)
+                
+                # 畫出文字
+                plt.text(
+                    X[i] + 1,
+                    Y[j] - 3,
+                    actual_char,
+                    fontsize=14,
+                    color="black",
+                    alpha=0.7,
+                    fontproperties=best_prop  # 重點：手動指定字體屬性
+                )
+                
+                # 畫出 Unicode 編碼小字
+                plt.text(
+                    X[i] + 8.5,
+                    Y[j] - 3,
+                    char_code[2:6],
+                    fontsize=8,
+                    color="black",
+                    alpha=0.7,
+                    fontproperties=font_objects[2]["prop"] # 固定用 Arial 顯示編碼
+                )
+                fnip[page][index] = char_code[2:6]
+            
+            index += 1
             count += 1
-
+            
             
 def table_square(axes):
     X = np.arange(7.5, 192.5, 20)

@@ -18,7 +18,7 @@ if is_specified == 'y':
 else:
     clean_text = raw_clean_text
 
-not_repeated = input("是否去除重複字(y/n)： ")
+not_repeated = input("是否去除重複字元(y/n)： ")
 
 if not_repeated == 'y':
     unique_characters = set(clean_text)

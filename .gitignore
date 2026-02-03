@@ -2,7 +2,7 @@
 origin_manuscript_paper.txt
 manuscript_paper.txt
 chinese_character.txt
-數字標點.txt
+標點符號.txt
 all_manuscript_copy.txt
 characters_history.txt
 
@@ -11,6 +11,7 @@ characters_history.txt
 *qrcode/
 *Table/
 manuscripts-final/
+CP950/
 
 千字文/
 長恨歌/
