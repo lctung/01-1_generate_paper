@@ -1,10 +1,15 @@
 import json
 import os
+import sys
+from pathlib import Path
+# 為了抓 config.py，設定 sys.path 在 ROOT
+sys.path.append(str(Path(__file__).resolve().parents[1]))
+import config # 在 config.py 中填入所有路徑
 
-with open('chinese_character.txt', 'r', encoding='utf-8') as file:
+with open(config.PATH_CHARACTER_PAPER, 'r', encoding='utf-8') as file:
     text = file.read()
 
-with open('../2_generate_manuscript/info.json','r', encoding='utf-8') as f:
+with open(config.PATH_INFO_JSON,'r', encoding='utf-8') as f:
     info = json.load(f)
 title = info["TITLE"]
 
@@ -33,10 +38,10 @@ if is_sorted == 'y':
 data_dict = {"CP950": unicode_characters}
 
 # 保存文件
-folder_path = "../2_generate_manuscript/CP950/"
+folder_path = config.DIR_CP950_JSON
 os.makedirs(os.path.dirname(folder_path), exist_ok=True)
 
-with open(f"{folder_path}CP950-{title}.json", "w", encoding="utf-8") as json_file:
+with open(f"{folder_path}/CP950-{title}.json", "w", encoding="utf-8") as json_file:
     json.dump(data_dict, json_file, ensure_ascii=False, indent=2)
 
 print(f"已產生 CP950-{title}.json")

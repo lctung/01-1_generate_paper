@@ -4,21 +4,26 @@ import json
 import qrcode
 import qrcode.image.svg
 from xml.etree import ElementTree as ET
+import sys
+from pathlib import Path
+# 為了抓 config.py，設定 sys.path 在 ROOT
+sys.path.append(str(Path(__file__).resolve().parents[1]))
+import config # 在 config.py 中填入所有路徑
 
-with open('info.json', 'r', encoding='utf-8') as f:
+with open(config.PATH_INFO_JSON,'r', encoding='utf-8') as f:
     info = json.load(f)
-
 title = info["TITLE"]
-# {title}/{title}-Table
+dir_title = f"{config.DIR_GEN_MANUSCRIPT}/{title}" # 該稿紙的專用資料夾
+
 # 創建存儲 QR Code 的資料夾
-qrcode_folder1 = f"{title}/{title}-qrcode"
-os.makedirs(qrcode_folder1, exist_ok=True)
-qrcode_folder2 = f"{title}/{title}-Merge"
-os.makedirs(qrcode_folder2, exist_ok=True)
+qrcode_folder = f"{dir_title}/{title}-qrcode"
+os.makedirs(qrcode_folder, exist_ok=True)
+qrcode_merge_folder = f"{dir_title}/{title}-Merge"
+os.makedirs(qrcode_merge_folder, exist_ok=True)
 
 for i in range(info["TOTAL_PAGES"]):
     # 讀取原本的 SVG 檔案
-    with open(f"{title}/{title}-Table/{i+1:03d}.svg", "rb") as file:
+    with open(f"{dir_title}/{title}-Table/{i+1:03d}.svg", "rb") as file:
         svg_content = file.read()
 
     # 產生 QR Code 圖片
@@ -26,10 +31,10 @@ for i in range(info["TOTAL_PAGES"]):
     qr_code = qrcode.make(i+1, image_factory=factory)
 
     # 將 QR Code 存成檔案
-    qr_code.save(f"{qrcode_folder1}/{title}-qrcode_{i+1:03d}.svg")
+    qr_code.save(f"{qrcode_folder}/qrcode_{i+1:03d}.svg")
 
     # 讀取 QR Code SVG 檔案
-    with open(f"{qrcode_folder1}/{title}-qrcode_{i+1:03d}.svg", "rb") as qr_file:
+    with open(f"{qrcode_folder}/qrcode_{i+1:03d}.svg", "rb") as qr_file:
         qr_code_svg_str = qr_file.read().decode('utf-8')
 
     # 找到最後一個 </svg> 標籤的位置
@@ -43,7 +48,7 @@ for i in range(info["TOTAL_PAGES"]):
     )
 
     # 將更新後的 SVG 寫回檔案
-    with open(f"{title}/{title}-Merge/{i+1:03d}.svg", "wb") as file:
+    with open(f"{dir_title}/{title}-Merge/{i+1:03d}.svg", "wb") as file:
         file.write(updated_svg_content.encode('utf-8'))
 
 print("QR Code 已成功插入 SVG 中")

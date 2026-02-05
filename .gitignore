@@ -1,18 +1,13 @@
-1_compare_duplicate.py
-origin_manuscript_paper.txt
-manuscript_paper.txt
-chinese_character.txt
+# -- 暫存與記錄檔 --
+manuscript_paper_copy.txt
+character.txt
 標點符號.txt
 all_manuscript_copy.txt
-characters_history.txt
+character_history.txt
 
-*Merge/
-*PDF/
-*qrcode/
-*Table/
+# -- 輸出資料夾 --
 manuscripts-final/
 CP950/
-
 千字文/
 長恨歌/
 洛神賦/
@@ -22,4 +17,8 @@ CP950/
 標點符號/
 姓氏名字號/
 
+# -- 個人項目 --
 114598033*
+
+# -- 路徑獨立 --
+config.yaml

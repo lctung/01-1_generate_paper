@@ -1,7 +1,13 @@
 import os
 import json
 import math
-with open("manuscript_paper.txt", "r", encoding="utf-8") as file:
+import sys
+from pathlib import Path
+# 為了抓 config.py，設定 sys.path 在 ROOT
+sys.path.append(str(Path(__file__).resolve().parents[1]))
+import config # 在 config.py 中填入所有路徑
+
+with open(config.PATH_MANUSCRIPT_PAPER, "r", encoding="utf-8") as file:
     text = file.read()
 
 # 輸入稿紙標題
@@ -22,14 +28,14 @@ not_repeated = input("是否去除重複字元(y/n)： ")
 
 if not_repeated == 'y':
     unique_characters = set(clean_text)
-    with open("characters_history.txt", "r", encoding="utf-8") as f:
+    with open(config.PATH_CHARACTERS_HISTORY, "r", encoding="utf-8") as f:
         history_characters = set(f.read())
     unique_characters = unique_characters - history_characters
 else:
     unique_characters = clean_text
 
 # 建立一個txt檔案並將字元寫入其中
-output_file = "chinese_character.txt"
+output_file = config.PATH_CHARACTER_PAPER
 with open(output_file, "w", encoding="utf-8") as file:
     for char in unique_characters:
         file.write(char)
@@ -39,7 +45,7 @@ count = len(unique_characters)
 pages = math.ceil(count/100)
 
 # 將 總字元數 + 稿紙頁數 寫入 info.json 方便稿紙生成調用
-paper_info_path = "D:\\NTUT\\AI\\Font-Project\\01-1_generate_paper-main\\2_generate_manuscript\\info.json"
+paper_info_path = config.PATH_INFO_JSON
 os.makedirs(os.path.dirname(paper_info_path), exist_ok=True)
 
 with open(paper_info_path, 'r', encoding='utf-8') as f:

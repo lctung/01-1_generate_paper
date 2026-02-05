@@ -11,31 +11,38 @@ from PIL import Image
 import os
 import matplotlib.font_manager as fm
 from fontTools.ttLib import TTFont
+import sys
+from pathlib import Path
+# 為了抓 config.py，設定 sys.path 在 ROOT
+sys.path.append(str(Path(__file__).resolve().parents[1]))
+import config # 在 config.py 中填入所有路徑
+
 
 # 讀取 info.json 稿紙字元數 及 頁數
-with open('info.json','r', encoding='utf-8') as f:
+with open(config.PATH_INFO_JSON,'r', encoding='utf-8') as f:
     info = json.load(f)
+
 total_characters = info["TOTAL_CHARACTERS"]
 total_pages = info["TOTAL_PAGES"]
 title = info["TITLE"]
 
-font_configs = [
-    {"name": "NotoSansTC", "path": r"D:\NTUT\AI\Font-Project\01-1_generate_paper-main\2_generate_manuscript\font_type\NotoSansTC-ExtraLight.ttf"},
-    {"name": "FreeSans", "path": r"D:\NTUT\AI\Font-Project\01-1_generate_paper-main\2_generate_manuscript\font_type\FreeSans.ttf"}
+font_setting = [
+    {"name": "NotoSansTC", "path": f"{config.DIR_FONTS}/NotoSansTC-ExtraLight.ttf"},
+    {"name": "FreeSans", "path": f"{config.DIR_FONTS}/FreeSans.ttf"}
 ]
 
 font_objects = []
-for config in font_configs:
-    if os.path.exists(config["path"]):
-        fm.fontManager.addfont(config["path"])
-        prop = fm.FontProperties(fname=config["path"])
+for setting in font_setting:
+    if os.path.exists(setting["path"]):
+        fm.fontManager.addfont(setting["path"])
+        prop = fm.FontProperties(fname=setting["path"])
         # 使用 fontTools 讀取字元表
-        ttfont = TTFont(config["path"])
+        ttfont = TTFont(setting["path"])
         cmap = ttfont.getBestCmap()
         font_objects.append({
             "prop": prop,
             "cmap": cmap,
-            "name": config["name"]
+            "name": setting["name"]
         })
 
 noto_prop = next((obj["prop"] for obj in font_objects if obj["name"] == "NotoSansTC"), None)
@@ -315,11 +322,12 @@ def pipeline(args):
 
 
 fnip = [[""] * 100 for _ in range(total_pages)]  # Font Number in Page (Unicode)
-unicode = read_json(f"./CP950/CP950-{title}.json")
+unicode = read_json(f"{config.DIR_CP950_JSON}/CP950-{title}.json")
 
 if __name__ == "__main__":
     cpus = mp.cpu_count()  # count of CPU cores
-    result_path = f'{title}/{title}-Table' # 存放資料夾
+    dir_title = f"{config.DIR_GEN_MANUSCRIPT}/{title}" # 該稿紙的專用資料夾
+    result_path = f'{dir_title}/{title}-Table' # 存放資料夾
     if not os.path.exists(result_path):
         os.makedirs(result_path)
     print(f"Using {cpus = }")
