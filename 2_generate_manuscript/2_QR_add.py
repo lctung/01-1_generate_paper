@@ -38,21 +38,21 @@ for i in range(info["TOTAL_PAGES"]):
     qr_code = qrcode.make(str(page_num), image_factory=factory)
 
     # 將 QR Code 存成檔案
-    qr_path = qrcode_folder / f"qrcode_{page_num:03d}.svg"
-    qr_code.save(str(qr_path))
+    qr_path = str(qrcode_folder / f"qrcode_{page_num:03d}.svg")
+    qr_code.save(qr_path)
 
     # 讀取 QR Code SVG 檔案
     with open(qr_path, "rb") as qr_file:
         qr_code_svg_str = qr_file.read().decode('utf-8')
 
     # 找到最後一個 </svg> 標籤的位置
-    last_svg_index = svg_content.rfind(b'</svg>')
+    last_svg_index = svg_content.rfind('</svg>')
 
     # 在最後一個 </svg> 之前插入 QR Code SVG 字串，並加入 transform 屬性
     updated_svg_content = (
-        svg_content[:last_svg_index].decode('utf-8') +
+        svg_content[:last_svg_index] +
         f'<g transform="translate(498,772) scale(0.6)">{qr_code_svg_str[qr_code_svg_str.find("<svg"):].strip()}</g>'
-        + svg_content[last_svg_index:].decode('utf-8')
+        + svg_content[last_svg_index:]
     )
 
     # 將更新後的 SVG 寫回檔案
