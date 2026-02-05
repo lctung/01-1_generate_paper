@@ -14,18 +14,26 @@ title = info["TITLE"]
 stu_id = info['ID']
 stu_name = info['NAME']
 
-dir_title = f"{config.DIR_GEN_MANUSCRIPT}/{title}" # 該稿紙的專用資料夾
-
-pdfs = [
-    Pdf.open(f"{dir_title}/{title}-PDF/{i:03d}.svg.pdf") for i in tqdm(range(1, info["TOTAL_PAGES"] + 1))
-]
+dir_title = config.DIR_GEN_MANUSCRIPT / title # 該稿紙的專用資料夾
+pdf_folder = dir_title / f"{title}-PDF"
 output = Pdf.new()
 
-for each in tqdm(pdfs):
-    output.pages.extend(each.pages)
+print(f"正在合併 {title} 的所有頁面...")
+for i in tqdm(range(1, info["TOTAL_PAGES"] + 1)):
+    pdf_filename = f"{i:03d}.svg.pdf"
+    pdf_path = pdf_folder / pdf_filename
+    
+    # 使用 with 確保檔案讀取後會釋放資源
+    with Pdf.open(pdf_path) as src:
+        output.pages.extend(src.pages)
 
 result_path = config.DIR_FINAL_PDF
-if not os.path.exists(result_path):
-    os.makedirs(result_path)
+result_path.mkdir(parents=True, exist_ok=True)
 
-output.save(f"{result_path}/{stu_id}_{stu_name}_{title}.pdf")
+final_filename = f"{stu_id}_{stu_name}_{title}.pdf"
+final_output_path = result_path / final_filename
+
+output.save(final_output_path)
+
+print("合併完成")
+print(f"檔案儲存於：{final_output_path}")

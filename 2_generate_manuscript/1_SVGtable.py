@@ -326,8 +326,9 @@ unicode = read_json(f"{config.DIR_CP950_JSON}/CP950-{title}.json")
 
 if __name__ == "__main__":
     cpus = mp.cpu_count()  # count of CPU cores
-    dir_title = f"{config.DIR_GEN_MANUSCRIPT}/{title}" # 該稿紙的專用資料夾
-    result_path = f'{dir_title}/{title}-Table' # 存放資料夾
+    dir_title = config.DIR_GEN_MANUSCRIPT / title # 該稿紙的專用資料夾
+    result_path = dir_title /f"{title}-Table" # 存放資料夾
+    
     if not os.path.exists(result_path):
         os.makedirs(result_path)
     print(f"Using {cpus = }")

@@ -14,12 +14,17 @@ import config # 在 config.py 中填入所有路徑
 with open(config.PATH_INFO_JSON,'r', encoding='utf-8') as f:
     info = json.load(f)
 title = info["TITLE"]
-dir_title = f"{config.DIR_GEN_MANUSCRIPT}/{title}" # 該稿紙的專用資料夾
+
+dir_title = config.DIR_GEN_MANUSCRIPT / title # 該稿紙的專用資料夾
+merge_folder = dir_title / f"{title}-Merge"
+pdf_folder = dir_title / f"{title}-PDF"
 
 def svg2pdf(file):
-    drawing = svg2rlg(f"{dir_title}/{title}-Merge/{file}")
-    renderPDF.drawToFile(drawing, f"{dir_title}/{title}-PDF/{file}.pdf")
-
+    input_svg = merge_folder / file
+    output_pdf = pdf_folder / f"{file}.pdf"
+    
+    drawing = svg2rlg(str(input_svg))
+    renderPDF.drawToFile(drawing, str(output_pdf))
 
 if __name__ == "__main__":
     cpus = mp.cpu_count()  # count of CPU cores
@@ -28,7 +33,7 @@ if __name__ == "__main__":
         os.makedirs(result_path)
     print(f"Using {cpus = }")
     pool = mp.Pool(cpus)
-    files = listdir(f"{dir_title}/{title}-Merge")
+    files = listdir(str(merge_folder))
     for _ in tqdm(pool.imap_unordered(svg2pdf, files), total=info["TOTAL_PAGES"]):
         ...
     pool.close()
